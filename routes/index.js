@@ -22,6 +22,12 @@ function adminRequired(req, res, next) {
   next();
 }
 
+/* ---------- 健康检查（部署平台探活） ---------- */
+
+router.get('/health', function (req, res) {
+  res.json({ status: 'ok' });
+});
+
 /* ---------- 登录 / 退出 ---------- */
 
 router.get('/login', function (req, res) {

@@ -1,0 +1,1 @@
+chore: add Render deployment config (render.yaml, health check, env secrets)

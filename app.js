@@ -23,10 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 登录会话（演示项目使用默认内存存储）
+// 登录会话（部署环境请通过 SESSION_SECRET 环境变量注入密钥）
 app.use(
   session({
-    secret: 'unmanned-supermarket-secret',
+    secret: process.env.SESSION_SECRET || 'unmanned-supermarket-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 2 }, // 2 小时

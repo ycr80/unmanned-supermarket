@@ -1,0 +1,17 @@
+# Render Blueprint：连接本仓库即可自动部署
+# 使用方式：Render 控制台 → New → Blueprint → 选择 github.com/ycr80/unmanned-supermarket
+services:
+  - type: web
+    name: unmanned-supermarket
+    runtime: node
+    repo: https://github.com/ycr80/unmanned-supermarket
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    preDeployCommand: npm run seed
+    healthCheckPath: /health
+    envVars:
+      - key: DB_URI
+        sync: false
+      - key: SESSION_SECRET
+        sync: false

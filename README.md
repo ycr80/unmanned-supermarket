@@ -80,6 +80,24 @@ unmanned-supermarket
 | GET | `/api/products`、`/api/orders`、`/api/stats` | JSON 数据接口 | 登录 |
 | POST | `/api/orders` | JSON 下单 | 登录 |
 
+## 部署上线（免费方案：Render + MongoDB Atlas，约 10 分钟）
+
+> 代码已内置 `render.yaml`（Render Blueprint），连接 GitHub 仓库即可自动部署。
+
+**1. MongoDB Atlas（免费云数据库）**
+- 注册 https://www.mongodb.com/cloud/atlas → 创建免费 M0 集群
+- Database Access 创建数据库用户；Network Access 允许 `0.0.0.0/0`
+- 获取连接串（格式 `mongodb+srv://用户:密码@cluster0.xxxx.mongodb.net/supermarket`）
+
+**2. Render（免费托管）**
+- 注册 https://render.com → **New → Blueprint**
+- 选择本仓库 `ycr80/unmanned-supermarket`（`render.yaml` 已配置好构建/启动/种子数据/健康检查）
+- 按提示填写环境变量：`DB_URI`（上面的连接串）、`SESSION_SECRET`（任意长随机串）
+
+**3. 访问**
+- 构建完成后打开 `https://unmanned-supermarket.onrender.com`（免费实例闲置 15 分钟会休眠，首次访问冷启动约 1 分钟）
+- 登录：`admin / admin123`
+
 ## 说明
 
 - 密码为课程演示项目的明文存储，生产环境请使用 bcrypt 等哈希方案
