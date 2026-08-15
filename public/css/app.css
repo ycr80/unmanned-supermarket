@@ -1,0 +1,73 @@
+body {
+  background: #f5f6fa;
+}
+
+/* 登录页 */
+.login-wrap {
+  max-width: 420px;
+  margin: 80px auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+}
+
+.login-wrap h3 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* 统计卡片 */
+.stat-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid #337ab7;
+}
+
+.stat-card .num {
+  font-size: 28px;
+  font-weight: bold;
+  color: #337ab7;
+}
+
+.stat-card.warn {
+  border-left-color: #d9534f;
+}
+
+.stat-card.warn .num {
+  color: #d9534f;
+}
+
+.stat-card.success {
+  border-left-color: #5cb85c;
+}
+
+.stat-card.success .num {
+  color: #5cb85c;
+}
+
+/* 库存预警 */
+.low-stock {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.low-badge {
+  background: #d9534f;
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+.page-header-bar {
+  margin-bottom: 16px;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}

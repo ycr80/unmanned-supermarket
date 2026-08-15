@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="login-wrap">
+    <h3>🛒 无人自助超市系统</h3>
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <form method="post" action="/login">
+      <div class="form-group">
+        <label>登录角色</label>
+        <select name="role" class="form-control">
+          <option value="admin">管理员</option>
+          <option value="staff">员工</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>账号</label>
+        <input type="text" name="username" class="form-control" required maxlength="50" placeholder="管理员：admin / 员工：staff" />
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" name="password" class="form-control" required maxlength="50" placeholder="默认密码：admin123 / staff123" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">登 录</button>
+    </form>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<%- include('../partials/header', { title: '新建进货单' }) %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+  <div class="container">
+    <div class="page-header-bar">
+      <h3>新建进货单</h3>
+    </div>
+
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form method="post" action="/purchases/create">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>商品 *</label>
+                <select name="product" id="product" class="form-control" required>
+                  <option value="">请选择商品</option>
+                  <% products.forEach(function (p) { %>
+                    <option value="<%= p._id %>" data-cost="<%= p.cost %>" data-supplier="<%= p.supplier %>">
+                      <%= p.name %>（当前库存 <%= p.stock %> <%= p.unit %>）
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>进货数量 *</label>
+                <input type="number" name="quantity" min="1" class="form-control" required />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>进价（元）*</label>
+                <input type="number" name="cost" step="0.01" min="0" class="form-control" required />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>供应商</label>
+                <input type="text" name="supplier" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>进货日期 *</label>
+                <input type="text" name="date" id="date" class="form-control" required />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <textarea name="remark" class="form-control" rows="2" maxlength="500"></textarea>
+          </div>
+          <hr />
+          <button type="submit" class="btn btn-primary">提交进货单</button>
+          <a href="/purchases" class="btn btn-default">返回列表</a>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 选择商品后自动带出进价与供应商
+    $('#product').on('change', function () {
+      var opt = $(this).find(':selected');
+      $('input[name=cost]').val(opt.data('cost') || '');
+      $('input[name=supplier]').val(opt.data('supplier') || '');
+    });
+    $('#date').datepicker({
+      format: 'yyyy-mm-dd',
+      language: 'zh-CN',
+      autoclose: true,
+      todayBtn: true,
+      todayHighlight: true
+    });
+  </script>
+  <%- include('../partials/footer') %>

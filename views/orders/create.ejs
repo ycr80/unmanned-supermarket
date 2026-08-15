@@ -1,0 +1,68 @@
+<%- include('../partials/header', { title: '顾客选购' }) %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+  <div class="container">
+    <div class="page-header-bar">
+      <h3>顾客选购下单</h3>
+    </div>
+
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form method="post" action="/orders/create" id="orderForm">
+      <div class="form-group" style="max-width: 300px;">
+        <label>顾客姓名</label>
+        <input type="text" name="customer" class="form-control" placeholder="散客" maxlength="50" />
+      </div>
+      <% if (products.length === 0) { %>
+        <p class="text-muted">暂无在售商品，请先到「商品管理」添加商品</p>
+      <% } else { %>
+        <table class="table table-bordered bg-white">
+          <tr>
+            <th>商品</th>
+            <th>分类</th>
+            <th>售价（元）</th>
+            <th>当前库存</th>
+            <th style="width: 160px;">购买数量</th>
+          </tr>
+          <% products.forEach(function (p) { %>
+            <tr>
+              <td><%= p.name %></td>
+              <td><%= p.category %></td>
+              <td><%= p.price.toFixed(2) %></td>
+              <td>
+                <span class="<%= p.stock <= p.safetyStock ? 'low-stock' : '' %>"><%= p.stock %> <%= p.unit %></span>
+              </td>
+              <td>
+                <input type="number" name="productId" value="<%= p._id %>" hidden />
+                <input type="number" name="quantity" min="0" class="form-control"
+                  data-max="<%= p.stock %>" placeholder="0" />
+              </td>
+            </tr>
+          <% }) %>
+        </table>
+        <button type="submit" class="btn btn-primary">提交订单（自动扣减库存）</button>
+        <a href="/orders" class="btn btn-default">返回订单列表</a>
+      <% } %>
+    </form>
+  </div>
+  <script>
+    // 提交前校验：数量不能超过库存
+    $('#orderForm').on('submit', function () {
+      var ok = true;
+      $('input[name=quantity]').each(function () {
+        var v = Number($(this).val() || 0);
+        var max = Number($(this).data('max'));
+        if (v < 0 || v > max) {
+          alert('购买数量不能超过当前库存（' + max + '）');
+          ok = false;
+          return false;
+        }
+      });
+      return ok;
+    });
+  </script>
+  <%- include('../partials/footer') %>

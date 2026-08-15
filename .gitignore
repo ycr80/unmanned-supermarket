@@ -1,0 +1,19 @@
+# 依赖
+node_modules/
+
+# 日志
+*.log
+npm-debug.log*
+
+# 环境变量
+.env
+.env.*
+
+# 本地数据目录（MongoDB）
+mongodata/
+
+# 编辑器 / 系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

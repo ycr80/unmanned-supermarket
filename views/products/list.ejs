@@ -1,0 +1,58 @@
+<%- include('../partials/header', { title: '商品管理' }) %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+  <div class="container">
+    <div class="page-header-bar">
+      <h3>商品管理</h3>
+    </div>
+
+    <form class="form-inline" method="get" action="/products" style="margin-bottom: 16px;">
+      <div class="form-group">
+        <input type="text" name="q" class="form-control" placeholder="按名称 / 分类 / 供应商搜索" value="<%= q %>" />
+      </div>
+      <button type="submit" class="btn btn-default">搜索</button>
+      <a href="/products/create" class="btn btn-primary pull-right">+ 新增商品</a>
+    </form>
+
+    <% if (products.length === 0) { %>
+      <p class="text-muted">暂无商品数据</p>
+    <% } else { %>
+      <table class="table table-bordered table-hover bg-white">
+        <tr>
+          <th>商品名称</th>
+          <th>分类</th>
+          <th>售价（元）</th>
+          <th>进价（元）</th>
+          <th>库存</th>
+          <th>供应商</th>
+          <th>生产日期</th>
+          <th>过期时间</th>
+          <th>操作</th>
+        </tr>
+        <% products.forEach(function (p) { %>
+          <tr>
+            <td><%= p.name %></td>
+            <td><%= p.category %></td>
+            <td><%= p.price.toFixed(2) %></td>
+            <td><%= p.cost.toFixed(2) %></td>
+            <td>
+              <span class="<%= p.isLow ? 'low-stock' : '' %>"><%= p.stock %> <%= p.unit %></span>
+              <% if (p.isLow) { %><span class="low-badge">库存预警</span><% } %>
+            </td>
+            <td><%= p.supplier || '-' %></td>
+            <td><%= p.productionDate || '-' %></td>
+            <td><%= p.expiryDate || '-' %></td>
+            <td>
+              <a href="/products/<%= p._id %>/edit" class="btn btn-xs btn-primary">编辑</a>
+              <% if (user.role === 'admin') { %>
+                <a href="/products/<%= p._id %>/delete" class="btn btn-xs btn-danger" onclick="return confirm('确定删除该商品吗？')">删除</a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } %>
+  </div>
+  <%- include('../partials/footer') %>

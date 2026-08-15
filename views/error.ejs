@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <title><%= error.status || 500 %> - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container" style="margin-top: 80px; text-align: center;">
+    <h1><%= error.status || 500 %></h1>
+    <p class="lead"><%= message %></p>
+    <% if (error.stack && process.env.NODE_ENV !== 'production') { %>
+      <pre class="text-left"><%= error.stack %></pre>
+    <% } %>
+    <a href="/dashboard" class="btn btn-primary">返回首页</a>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<% if (user) { %>
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/dashboard">🛒 无人自助超市</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="<%= path === '/dashboard' ? 'active' : '' %>"><a href="/dashboard">首页统计</a></li>
+        <li class="<%= path.indexOf('/products') === 0 ? 'active' : '' %>"><a href="/products">商品管理</a></li>
+        <li class="<%= path.indexOf('/purchases') === 0 ? 'active' : '' %>"><a href="/purchases">进货管理</a></li>
+        <li class="<%= path.indexOf('/orders') === 0 ? 'active' : '' %>"><a href="/orders">订单管理</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="#">
+            <span class="label <%= user.role === 'admin' ? 'label-warning' : 'label-info' %>">
+              <%= user.role === 'admin' ? '管理员' : '员工' %>
+            </span>
+            <%= user.name %>（<%= user.username %>）
+          </a>
+        </li>
+        <li><a href="/logout">退出</a></li>
+      </ul>
+    </div>
+  </nav>
+<% } %>

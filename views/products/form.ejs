@@ -1,0 +1,113 @@
+<%- include('../partials/header', { title: product ? '编辑商品' : '新增商品' }) %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+  <div class="container">
+    <div class="page-header-bar">
+      <h3><%= product ? '编辑商品' : '新增商品' %></h3>
+    </div>
+
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form method="post" action="<%= product ? '/products/' + product._id + '/edit' : '/products/create' %>">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>商品名称 *</label>
+                <input type="text" name="name" class="form-control" required maxlength="100"
+                  value="<%= product ? product.name : '' %>" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>分类</label>
+                <input type="text" name="category" class="form-control" maxlength="50"
+                  value="<%= product ? product.category : '食品' %>" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>售价（元）*</label>
+                <input type="number" name="price" step="0.01" min="0" class="form-control" required
+                  value="<%= product ? product.price : '' %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>进价（元）</label>
+                <input type="number" name="cost" step="0.01" min="0" class="form-control"
+                  value="<%= product ? product.cost : 0 %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>库存量 *</label>
+                <input type="number" name="stock" min="0" class="form-control" required
+                  value="<%= product ? product.stock : 0 %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>安全库存阈值（预警线）</label>
+                <input type="number" name="safetyStock" min="0" class="form-control"
+                  value="<%= product ? product.safetyStock : '' %>" />
+                <% if (!product) { %>
+                  <p class="help-block">不填则默认取初始库存的 20%</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>计件方式</label>
+                <input type="text" name="unit" class="form-control" maxlength="20"
+                  value="<%= product ? product.unit : '件' %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>供应商</label>
+                <input type="text" name="supplier" class="form-control" maxlength="100"
+                  value="<%= product ? product.supplier : '' %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>生产日期</label>
+                <input type="text" name="productionDate" class="form-control datepicker"
+                  value="<%= product ? product.productionDate : '' %>" />
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>过期时间</label>
+                <input type="text" name="expiryDate" class="form-control datepicker"
+                  value="<%= product ? product.expiryDate : '' %>" />
+              </div>
+            </div>
+          </div>
+          <hr />
+          <button type="submit" class="btn btn-primary">保存</button>
+          <a href="/products" class="btn btn-default">返回列表</a>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    $('.datepicker').datepicker({
+      format: 'yyyy-mm-dd',
+      language: 'zh-CN',
+      autoclose: true,
+      todayBtn: true,
+      todayHighlight: true
+    });
+  </script>
+  <%- include('../partials/footer') %>

@@ -1,0 +1,59 @@
+<%- include('../partials/header', { title: '进货管理' }) %>
+</head>
+
+<body>
+  <%- include('../partials/nav') %>
+  <div class="container">
+    <div class="page-header-bar">
+      <h3>进货管理</h3>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+      <a href="/purchases/create" class="btn btn-primary">+ 新建进货单</a>
+    </div>
+
+    <% if (purchases.length === 0) { %>
+      <p class="text-muted">暂无进货单</p>
+    <% } else { %>
+      <table class="table table-bordered table-hover bg-white">
+        <tr>
+          <th>进货单号</th>
+          <th>商品</th>
+          <th>数量</th>
+          <th>进价（元）</th>
+          <th>供应商</th>
+          <th>进货日期</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+        <% purchases.forEach(function (p) { %>
+          <tr>
+            <td><%= p.orderNo %></td>
+            <td><%= p.productName %></td>
+            <td><%= p.quantity %></td>
+            <td><%= p.cost.toFixed(2) %></td>
+            <td><%= p.supplier || '-' %></td>
+            <td><%= p.date %></td>
+            <td>
+              <% if (p.status === 'pending') { %>
+                <span class="label label-warning">待收货</span>
+              <% } else { %>
+                <span class="label label-success">已入库</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (p.status === 'pending' && user.role === 'admin') { %>
+                <a href="/purchases/<%= p._id %>/receive" class="btn btn-xs btn-success"
+                  onclick="return confirm('确认收货并入库？库存将增加 <%= p.quantity %>')">确认收货</a>
+              <% } %>
+              <% if (user.role === 'admin') { %>
+                <a href="/purchases/<%= p._id %>/delete" class="btn btn-xs btn-danger"
+                  onclick="return confirm('确定删除该进货单吗？')">删除</a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } %>
+  </div>
+  <%- include('../partials/footer') %>
