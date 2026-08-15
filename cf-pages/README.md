@@ -53,9 +53,13 @@ https://你的项目名.pages.dev/api/init
 
 ## 本地预览
 
+> 注意：仓库中**不包含 wrangler.toml**。若在 `cf-pages/` 放一个 wrangler.toml，
+> Cloudflare Pages 构建时会自动执行 `npx wrangler deploy` 导致部署失败。
+> 本地预览请直接用命令行参数传入绑定：
+
 ```bash
 cd cf-pages
-npx wrangler pages dev . --port 8788   # 自动使用本地 D1（miniflare）
+npx wrangler pages dev public --d1 DB=local --binding AUTH_SECRET=dev-secret-123456
 # 打开 http://127.0.0.1:8788 ，先访问 http://127.0.0.1:8788/api/init
 ```
 
@@ -68,8 +72,7 @@ cf-pages
 │   ├── _lib/auth.js       # HMAC Cookie 会话
 │   ├── _lib/db.js         # D1 SQL 数据访问层（含建表与示例数据）
 │   └── api/               # login/logout/me/stats/init + 商品/进货/订单 CRUD
-├── schema.sql             # D1 表结构（/api/init 会自动执行）
-└── wrangler.toml          # 本地开发配置
+└── schema.sql             # D1 表结构（/api/init 会自动执行）
 ```
 
 ## 说明
