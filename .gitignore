@@ -17,3 +17,9 @@ mongodata/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Cloudflare Pages 本地开发产物
+.wrangler/
+cf-pages/node_modules/
+cf-pages/.wrangler/
+cf-pages/*.log

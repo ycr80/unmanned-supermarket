@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>顾客选购 - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="nav"></div>
+  <div class="container">
+    <h3>顾客选购下单</h3>
+    <div id="err" class="alert alert-danger" style="display:none;"></div>
+    <form id="orderForm">
+      <div class="form-group" style="max-width: 300px;">
+        <label>顾客姓名</label>
+        <input type="text" name="customer" class="form-control" maxlength="50" placeholder="散客" />
+      </div>
+      <div id="box"></div>
+    </form>
+  </div>
+
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    window.PAGE = 'orders';
+    renderNav();
+
+    (async () => {
+      try {
+        const products = await API.get('/api/products');
+        const box = document.getElementById('box');
+        if (products.length === 0) {
+          box.innerHTML = '<p class="text-muted">暂无在售商品，请先到「商品管理」添加商品</p>';
+          return;
+        }
+        box.innerHTML = `
+          <table class="table table-bordered bg-white">
+            <tr><th>商品</th><th>分类</th><th>售价（元）</th><th>当前库存</th><th style="width:160px;">购买数量</th></tr>
+            ${products.map((p) => `
+              <tr>
+                <td>${esc(p.name)}</td>
+                <td>${esc(p.category)}</td>
+                <td>${fmt(p.price)}</td>
+                <td><span class="${p.stock <= p.safety_stock ? 'low-stock' : ''}">${p.stock} ${esc(p.unit)}</span></td>
+                <td><input type="number" class="form-control qty" data-id="${p.id}" data-max="${p.stock}" min="0" placeholder="0" /></td>
+              </tr>`).join('')}
+          </table>
+          <button type="submit" class="btn btn-primary">提交订单（自动扣减库存）</button>
+          <a href="orders.html" class="btn btn-default">返回订单列表</a>`;
+      } catch (e) {
+        alert(e.message);
+      }
+    })();
+
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('err');
+      err.style.display = 'none';
+      const items = [];
+      document.querySelectorAll('.qty').forEach((input) => {
+        const v = Number(input.value || 0);
+        const max = Number(input.dataset.max);
+        if (v < 0 || v > max) {
+          err.textContent = '购买数量不能超过当前库存（' + max + '）';
+          err.style.display = 'block';
+          throw new Error('stop');
+        }
+        if (v > 0) items.push({ productId: Number(input.dataset.id), quantity: v });
+      });
+      if (items.length === 0) {
+        err.textContent = '请至少选择一件商品并填写购买数量';
+        err.style.display = 'block';
+        return;
+      }
+      try {
+        await API.post('/api/orders', {
+          customer: document.querySelector('input[name=customer]').value.trim(),
+          items,
+        });
+        location.href = 'orders.html';
+      } catch (ex) {
+        if (ex.message !== 'stop') {
+          err.textContent = ex.message;
+          err.style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

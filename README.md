@@ -98,6 +98,16 @@ unmanned-supermarket
 - 构建完成后打开 `https://unmanned-supermarket.onrender.com`（免费实例闲置 15 分钟会休眠，首次访问冷启动约 1 分钟）
 - 登录：`admin / admin123`
 
+## 在线演示（Cloudflare Pages 版）
+
+`cf-pages/` 目录是部署到 **Cloudflare Pages** 的版本（静态页面 + Pages Functions + D1 数据库），
+**长期免费、无需服务器**，业务逻辑与主项目一致。部署步骤见 [`cf-pages/README.md`](cf-pages/README.md)：
+
+1. Cloudflare → Pages → Connect to Git → 选择本仓库，Root directory 填 `cf-pages`，Build 留空，输出目录 `public`
+2. 创建 D1 数据库并绑定（变量名 `DB`），设置环境变量 `AUTH_SECRET`
+3. 部署后访问一次 `https://你的项目名.pages.dev/api/init` 初始化数据
+4. 访问 `https://你的项目名.pages.dev`，账号 `admin / admin123`
+
 ## 说明
 
 - 密码为课程演示项目的明文存储，生产环境请使用 bcrypt 等哈希方案

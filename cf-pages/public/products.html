@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商品管理 - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="nav"></div>
+  <div class="container">
+    <h3>商品管理</h3>
+    <form class="form-inline" style="margin-bottom: 16px;" onsubmit="loadProducts(event)">
+      <div class="form-group">
+        <input type="text" id="q" class="form-control" placeholder="按名称 / 分类 / 供应商搜索" />
+      </div>
+      <button type="submit" class="btn btn-default">搜索</button>
+      <a href="product-form.html" class="btn btn-primary pull-right">+ 新增商品</a>
+    </form>
+    <div id="box"></div>
+  </div>
+
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    window.PAGE = 'products';
+    renderNav();
+
+    async function loadProducts(e) {
+      if (e) e.preventDefault();
+      const q = document.getElementById('q').value.trim();
+      const list = await API.get('/api/products' + (q ? '?q=' + encodeURIComponent(q) : ''));
+      const box = document.getElementById('box');
+      if (list.length === 0) {
+        box.innerHTML = '<p class="text-muted">暂无商品数据</p>';
+        return;
+      }
+      const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+      box.innerHTML = `
+        <table class="table table-bordered table-hover bg-white">
+          <tr><th>商品名称</th><th>分类</th><th>售价（元）</th><th>进价（元）</th><th>库存</th><th>供应商</th><th>生产日期</th><th>过期时间</th><th>操作</th></tr>
+          ${list.map((p) => {
+            const low = p.stock <= p.safety_stock;
+            return `<tr>
+              <td>${esc(p.name)}</td>
+              <td>${esc(p.category)}</td>
+              <td>${fmt(p.price)}</td>
+              <td>${fmt(p.cost)}</td>
+              <td><span class="${low ? 'low-stock' : ''}">${p.stock} ${esc(p.unit)}</span>${low ? '<span class="low-badge">库存预警</span>' : ''}</td>
+              <td>${esc(p.supplier) || '-'}</td>
+              <td>${esc(p.production_date) || '-'}</td>
+              <td>${esc(p.expiry_date) || '-'}</td>
+              <td>
+                <a href="product-form.html?id=${p.id}" class="btn btn-xs btn-primary">编辑</a>
+                ${isAdmin ? `<button class="btn btn-xs btn-danger" onclick="delProduct(${p.id})">删除</button>` : ''}
+              </td>
+            </tr>`;
+          }).join('')}
+        </table>`;
+    }
+
+    async function delProduct(id) {
+      if (!confirm('确定删除该商品吗？')) return;
+      try {
+        await API.del('/api/products/' + id);
+        loadProducts();
+      } catch (e) { alert(e.message); }
+    }
+
+    loadProducts();
+  </script>
+</body>
+
+</html>

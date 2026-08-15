@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商品表单 - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+  <link href="/css/bootstrap-datepicker.css" rel="stylesheet" />
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="nav"></div>
+  <div class="container">
+    <h3 id="formTitle">新增商品</h3>
+    <div id="err" class="alert alert-danger" style="display:none;"></div>
+    <div class="panel panel-default"><div class="panel-body">
+      <form id="productForm">
+        <div class="row">
+          <div class="col-md-6"><div class="form-group"><label>商品名称 *</label>
+            <input type="text" name="name" class="form-control" required maxlength="100" /></div></div>
+          <div class="col-md-6"><div class="form-group"><label>分类</label>
+            <input type="text" name="category" class="form-control" maxlength="50" value="食品" /></div></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><div class="form-group"><label>售价（元）*</label>
+            <input type="number" name="price" step="0.01" min="0" class="form-control" required /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>进价（元）</label>
+            <input type="number" name="cost" step="0.01" min="0" class="form-control" value="0" /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>库存量 *</label>
+            <input type="number" name="stock" min="0" class="form-control" required value="0" /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>安全库存阈值</label>
+            <input type="number" name="safetyStock" min="0" class="form-control" />
+            <p class="help-block">不填则默认取初始库存 20%</p></div></div>
+        </div>
+        <div class="row">
+          <div class="col-md-3"><div class="form-group"><label>计件方式</label>
+            <input type="text" name="unit" class="form-control" value="件" /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>供应商</label>
+            <input type="text" name="supplier" class="form-control" /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>生产日期</label>
+            <input type="text" name="productionDate" class="form-control datepicker" /></div></div>
+          <div class="col-md-3"><div class="form-group"><label>过期时间</label>
+            <input type="text" name="expiryDate" class="form-control datepicker" /></div></div>
+        </div>
+        <hr />
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="products.html" class="btn btn-default">返回列表</a>
+      </form>
+    </div></div>
+  </div>
+
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap-datepicker.min.js"></script>
+  <script src="/js/bootstrap-datepicker.zh-CN.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    window.PAGE = 'products';
+    renderNav();
+
+    let editId = null;
+    const params = new URLSearchParams(location.search);
+    if (params.get('id')) {
+      editId = params.get('id');
+      document.getElementById('formTitle').textContent = '编辑商品';
+      API.get('/api/products/' + editId).then((p) => {
+        const form = document.getElementById('productForm');
+        form.name.value = p.name;
+        form.category.value = p.category;
+        form.price.value = p.price;
+        form.cost.value = p.cost;
+        form.stock.value = p.stock;
+        form.safetyStock.value = p.safety_stock;
+        form.unit.value = p.unit;
+        form.supplier.value = p.supplier;
+        form.productionDate.value = p.production_date;
+        form.expiryDate.value = p.expiry_date;
+      }).catch((e) => alert(e.message));
+    }
+
+    $('.datepicker').datepicker({ format: 'yyyy-mm-dd', language: 'zh-CN', autoclose: true, todayBtn: true, todayHighlight: true });
+
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('err');
+      err.style.display = 'none';
+      const f = e.target;
+      const body = {
+        name: f.name.value.trim(),
+        category: f.category.value.trim(),
+        price: Number(f.price.value),
+        cost: Number(f.cost.value || 0),
+        stock: Number(f.stock.value || 0),
+        safetyStock: f.safetyStock.value === '' ? null : Number(f.safetyStock.value),
+        unit: f.unit.value.trim(),
+        supplier: f.supplier.value.trim(),
+        productionDate: f.productionDate.value.trim(),
+        expiryDate: f.expiryDate.value.trim(),
+      };
+      try {
+        if (editId) await API.put('/api/products/' + editId, body);
+        else await API.post('/api/products', body);
+        location.href = 'products.html';
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+
+</html>

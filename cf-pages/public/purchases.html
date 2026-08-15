@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>进货管理 - 无人自助超市</title>
+  <link href="/css/bootstrap.css" rel="stylesheet" />
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="nav"></div>
+  <div class="container">
+    <h3>进货管理</h3>
+    <div style="margin-bottom: 16px;">
+      <a href="purchase-form.html" class="btn btn-primary">+ 新建进货单</a>
+    </div>
+    <div id="box"></div>
+  </div>
+
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    window.PAGE = 'purchases';
+    renderNav();
+
+    (async () => {
+      try {
+        const list = await API.get('/api/purchases');
+        const box = document.getElementById('box');
+        if (list.length === 0) {
+          box.innerHTML = '<p class="text-muted">暂无进货单</p>';
+          return;
+        }
+        const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+        box.innerHTML = `
+          <table class="table table-bordered table-hover bg-white">
+            <tr><th>进货单号</th><th>商品</th><th>数量</th><th>进价（元）</th><th>供应商</th><th>进货日期</th><th>状态</th><th>操作</th></tr>
+            ${list.map((p) => `
+              <tr>
+                <td>${esc(p.order_no)}</td>
+                <td>${esc(p.product_name)}</td>
+                <td>${p.quantity}</td>
+                <td>${fmt(p.cost)}</td>
+                <td>${esc(p.supplier) || '-'}</td>
+                <td>${esc(p.date)}</td>
+                <td>${p.status === 'pending' ? '<span class="label label-warning">待收货</span>' : '<span class="label label-success">已入库</span>'}</td>
+                <td>
+                  ${p.status === 'pending' && isAdmin
+                    ? `<button class="btn btn-xs btn-success" onclick="receive(${p.id}, ${p.quantity})">确认收货</button>` : ''}
+                  ${isAdmin ? `<button class="btn btn-xs btn-danger" onclick="del(${p.id})">删除</button>` : ''}
+                </td>
+              </tr>`).join('')}
+          </table>`;
+      } catch (e) {
+        alert(e.message);
+      }
+    })();
+
+    async function receive(id, qty) {
+      if (!confirm('确认收货并入库？库存将增加 ' + qty)) return;
+      try {
+        await API.post('/api/purchases/receive/' + id);
+        location.reload();
+      } catch (e) { alert(e.message); }
+    }
+
+    async function del(id) {
+      if (!confirm('确定删除该进货单吗？')) return;
+      try {
+        await API.del('/api/purchases/' + id);
+        location.reload();
+      } catch (e) { alert(e.message); }
+    }
+  </script>
+</body>
+
+</html>
